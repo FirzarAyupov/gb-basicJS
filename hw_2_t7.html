@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BasicJS</title>
+</head>
+
+<body>
+</body>
+<script>
+    // 7. *Сравнить null и 0. Попробуйте объяснить результат.
+    console.log(null != 0); //true
+    console.log(null == 0); //false
+    console.log(null >= 0); //true
+    console.log(null <= 0); //true
+    console.log(null > 0);  //false
+    console.log(null < 0);  //false
+
+    //Такой результат получается из за алгоритмов сравнения в JS. В некоторых сравнениях идет приведение типов в некоторых нет, а для >= и <= алгоритм такой если null < 0 = false, то x >= 0 (такая же логика и для <=)
+
+
+</script>
+
+</html>
