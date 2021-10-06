@@ -72,6 +72,7 @@ function startGame() {
 
     snake_timer = setInterval(move, SNAKE_SPEED);//каждые 200мс запускаем функцию move
     setTimeout(createFood, 5000);
+    barrier_timer = setInterval(createBarrier, 5000);
 }
 
 /**
@@ -128,7 +129,7 @@ function move() {
     // 1) new_unit не часть змейки
     // 2) Змейка не ушла за границу поля
     //console.log(new_unit);
-    if (!isSnakeUnit(new_unit) && new_unit !== undefined) {
+    if (!isSnakeUnit(new_unit) && new_unit !== undefined && !isBarrier(new_unit)) {
         // Добавление новой части змейки
         new_unit.setAttribute('class', new_unit.getAttribute('class') + ' snake-unit');
         snake.push(new_unit);
@@ -183,6 +184,24 @@ function haveFood(unit) {
 }
 
 /**
+ * проверка на препятствие
+ * @param unit
+ * @returns {boolean}
+ */
+function isBarrier(unit) {
+    var check = false;
+
+    var unit_classes = unit.getAttribute('class').split(' ');
+
+    // Если препятствие
+    if (unit_classes.includes('barrier-unit')) {
+        check = true;
+
+    }
+    return check;
+}
+
+/**
  * Создание еды
  */
 function createFood() {
@@ -196,8 +215,8 @@ function createFood() {
         var food_cell = document.getElementsByClassName('cell-' + food_y + '-' + food_x)[0];
         var food_cell_classes = food_cell.getAttribute('class').split(' ');
 
-        // проверка на змейку
-        if (!food_cell_classes.includes('snake-unit')) {
+        // проверка на змейку и препятствие
+        if (!food_cell_classes.includes('snake-unit') && !food_cell_classes.includes('barrier-unit')) {
             var classes = '';
             for (var i = 0; i < food_cell_classes.length; i++) {
                 classes += food_cell_classes[i] + ' ';
@@ -215,7 +234,7 @@ function createFood() {
 function createBarrier() {
     var barrierCreated = false;
 
-    while (!barrierCreated) { //пока еду не создали
+    while (!barrierCreated) { //пока препятствие не создали
         // рандом
         var barrier_x = Math.floor(Math.random() * FIELD_SIZE_X);
         var barrier_y = Math.floor(Math.random() * FIELD_SIZE_Y);
@@ -223,8 +242,8 @@ function createBarrier() {
         var barrier_cell = document.getElementsByClassName('cell-' + barrier_y + '-' + barrier_x)[0];
         var barrier_cell_classes = barrier_cell.getAttribute('class').split(' ');
 
-        // проверка на змейку
-        if (!barrier_cell_classes.includes('snake-unit')) {
+        // проверка на змейку и еду
+        if (!barrier_cell_classes.includes('snake-unit') && !barrier_cell_classes.includes('food-unit')) {
             var classes = '';
             for (var i = 0; i < barrier_cell_classes.length; i++) {
                 classes += barrier_cell_classes[i] + ' ';
@@ -232,6 +251,7 @@ function createBarrier() {
 
             barrier_cell.setAttribute('class', classes + 'barrier-unit');
             barrierCreated = true;
+            setTimeout(function () { barrier_cell.classList.remove('barrier-unit') }, 10000);
         }
     }
 }
@@ -278,6 +298,7 @@ function viewScore(text) {
 function finishTheGame() {
     gameIsRunning = false;
     clearInterval(snake_timer);
+    clearInterval(barrier_timer)
     alert('Вы проиграли! Ваш результат: ' + score.toString());
 }
 
