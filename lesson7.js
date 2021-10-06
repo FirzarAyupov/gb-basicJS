@@ -9,14 +9,16 @@ var snake_timer; // Таймер змейки
 var food_timer; // Таймер для еды
 var score = 0; // Результат
 
+var barrier_timer;
+
 function init() {
     prepareGameField(); // Генерация поля
 
     var wrap = document.getElementsByClassName('wrap')[0];
     // Подгоняем размер контейнера под игровое поле
-    
-	/*
-	if (16 * (FIELD_SIZE_X + 1) < 380) {
+
+    /*
+    if (16 * (FIELD_SIZE_X + 1) < 380) {
         wrap.style.width = '380px';
     }
     else {
@@ -28,8 +30,10 @@ function init() {
     document.getElementById('snake-start').addEventListener('click', startGame);
     document.getElementById('snake-renew').addEventListener('click', refreshGame);
 
-// Отслеживание клавиш клавиатуры
+    // Отслеживание клавиш клавиатуры
     addEventListener('keydown', changeDirection);
+
+    viewScore(score);
 }
 
 /**
@@ -172,7 +176,8 @@ function haveFood(unit) {
         check = true;
         createFood();
         score++;
-        
+        viewScore(score);
+
     }
     return check;
 }
@@ -205,12 +210,39 @@ function createFood() {
 }
 
 /**
+ * Создание препятствия
+ */
+function createBarrier() {
+    var barrierCreated = false;
+
+    while (!barrierCreated) { //пока еду не создали
+        // рандом
+        var barrier_x = Math.floor(Math.random() * FIELD_SIZE_X);
+        var barrier_y = Math.floor(Math.random() * FIELD_SIZE_Y);
+
+        var barrier_cell = document.getElementsByClassName('cell-' + barrier_y + '-' + barrier_x)[0];
+        var barrier_cell_classes = barrier_cell.getAttribute('class').split(' ');
+
+        // проверка на змейку
+        if (!barrier_cell_classes.includes('snake-unit')) {
+            var classes = '';
+            for (var i = 0; i < barrier_cell_classes.length; i++) {
+                classes += barrier_cell_classes[i] + ' ';
+            }
+
+            barrier_cell.setAttribute('class', classes + 'barrier-unit');
+            barrierCreated = true;
+        }
+    }
+}
+
+/**
  * Изменение направления движения змейки
  * @param e - событие
  */
 function changeDirection(e) {
     console.log(e);
-	switch (e.keyCode) {
+    switch (e.keyCode) {
         case 37: // Клавиша влево
             if (direction != 'x+') {
                 direction = 'x-'
@@ -232,6 +264,12 @@ function changeDirection(e) {
             }
             break;
     }
+}
+
+function viewScore(text) {
+    var scoreText = document.getElementById('score');
+    scoreText.innerText = text;
+
 }
 
 /**
